@@ -1,4 +1,4 @@
-package group.common;
+package group7.common;
 
 import watermelon.sim.*;
 
