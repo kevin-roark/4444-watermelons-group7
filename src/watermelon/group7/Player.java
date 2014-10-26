@@ -1,4 +1,4 @@
-package watermelon.dumb;
+package watermelon.group7;
 
 import java.util.*;
 
@@ -15,32 +15,27 @@ public class Player extends watermelon.sim.Player {
 
 	}
 
-	static double distance(seed tmp, Pair pair) {
-		return Math.sqrt((tmp.x - pair.x) * (tmp.x - pair.x) + (tmp.y - pair.y) * (tmp.y - pair.y));
-	}
-
-	static double distance(seed a, Point b) {
-		return Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
-	}
-
 	@Override
 	public ArrayList<seed> move(ArrayList<Pair> treelist, double width, double length, double s) {
 		ArrayList<seed> seedlist = new ArrayList<seed>();
 		for (double i = distowall; i < width - distowall; i = i + distoseed) {
 			for (double j = distowall; j < length - distowall; j = j + distoseed) {
 				Random random = new Random();
+
 				seed tmp;
 				if (random.nextInt(2) == 0)
 					tmp = new seed(i, j, false);
 				else
 					tmp = new seed(i, j, true);
+
 				boolean add = true;
 				for (int f = 0; f < treelist.size(); f++) {
-					if (distance(tmp, treelist.get(f)) < distotree) {
+					if (WatermelonMathUtil.distance(tmp, treelist.get(f)) < distotree) {
 						add = false;
 						break;
 					}
 				}
+
 				if (add) {
 					seedlist.add(tmp);
 				}
