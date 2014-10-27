@@ -2,6 +2,8 @@ package watermelon.group7;
 
 import java.util.*;
 
+import watermelon.group7.common.*;
+
 import watermelon.sim.Pair;
 import watermelon.sim.Point;
 import watermelon.sim.seed;
@@ -44,7 +46,9 @@ public class Player extends watermelon.sim.Player {
 
 				boolean add = true;
 				for (int f = 0; f < treelist.size(); f++) {
-					if (WatermelonMathUtil.distance(tmp, treelist.get(f)) < distotree) {
+					if (WatermelonMathUtil.distance(tmp, treelist.get(f)) < distotree || 
+                        width - 2.0*distowall < i ||
+                        length - 2.0*distowall < j) {
 						add = false;
 						break;
 					}
@@ -63,7 +67,12 @@ public class Player extends watermelon.sim.Player {
             System.out.printf("Invalid setup!");
         }
 
-		System.out.printf("seedlist size is %d", seedlist.size());
+        System.out.println("");
+        System.out.format("Seeds placed:       \033[1;32m%d\033[0m\n", seedlist.size());
+        System.out.format("Max possible seeds: \033[1;32m%d\033[0m\n", Analysis.getMaxSeedsPossible(treelist, width, length));
+        System.out.format("Packing efficiency: \033[1;32m%.2f%%\033[0m\n", 100*Analysis.calculatePackingEfficiency(seedlist, treelist, width, length));
+        System.out.println("");
+
 		return seedlist;
 	}
 
