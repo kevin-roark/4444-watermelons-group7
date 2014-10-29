@@ -32,8 +32,10 @@ public class Player extends watermelon.sim.Player {
 		ArrayList<seed> seedlist = new ArrayList<seed>();
         boolean shift = false;
         int label = 0;
+        System.out.format("Max x: %f\n", width - distowall);
         for (double j = distowall; j < length - distowall; j = j + getHexYOffset() + EPSILON) {
             for (double i = distowall; i < width - distowall; i = i + distoseed + EPSILON) {
+                System.out.println(i);
                 boolean parity = (label % 2 == 0);
 
 				Random random = new Random();
@@ -45,16 +47,19 @@ public class Player extends watermelon.sim.Player {
                 }
 
 				boolean add = true;
+                if (tmp.x >= width - distowall) {
+                    add = false;
+                }
 				for (int f = 0; f < treelist.size(); f++) {
-					if (WatermelonMathUtil.distance(tmp, treelist.get(f)) < distotree || 
-                        width - 2.0*distowall < i ||
-                        length - 2.0*distowall < j) {
+					if (WatermelonMathUtil.distance(tmp, treelist.get(f)) < distotree) {
 						add = false;
 						break;
 					}
 				}
 
+
 				if (add) {
+                    //System.out.println(tmp);
 					seedlist.add(tmp);
 				}
 
@@ -67,11 +72,13 @@ public class Player extends watermelon.sim.Player {
             System.out.printf("Invalid setup!");
         }
 
+        /*
         System.out.println("");
         System.out.format("Seeds placed:       \033[1;32m%d\033[0m\n", seedlist.size());
         System.out.format("Max possible seeds: \033[1;32m%d\033[0m\n", Analysis.getMaxSeedsPossible(treelist, width, length));
         System.out.format("Packing efficiency: \033[1;32m%.2f%%\033[0m\n", 100*Analysis.calculatePackingEfficiency(seedlist, treelist, width, length));
         System.out.println("");
+        */
 
 		return seedlist;
 	}
