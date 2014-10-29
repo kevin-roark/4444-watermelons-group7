@@ -32,10 +32,8 @@ public class Player extends watermelon.sim.Player {
 		ArrayList<seed> seedlist = new ArrayList<seed>();
         boolean shift = false;
         int label = 0;
-        System.out.format("Max x: %f\n", width - distowall);
         for (double j = distowall; j < length - distowall; j = j + getHexYOffset() + EPSILON) {
             for (double i = distowall; i < width - distowall; i = i + distoseed + EPSILON) {
-                System.out.println(i);
                 boolean parity = (label % 2 == 0);
 
 				Random random = new Random();
@@ -63,13 +61,42 @@ public class Player extends watermelon.sim.Player {
 					seedlist.add(tmp);
 				}
 
-                label = (label + 1) % 41;
+                label = (label + 1) % 2;
 			}
             shift = !shift;
 		}
 
         if (!validateSeeds(seedlist)) {
             System.out.printf("Invalid setup!");
+        }
+
+        ArrayList<GraphNode> nodes = new ArrayList<GraphNode>();
+
+        // flipping phase
+        Random random = new Random();
+        double MAX_THRESHOLD = 7;
+        double threshold = MAX_THRESHOLD;
+        int NUM_THRESHOLDS = 12;
+        for (int k = 0; k <= NUM_THRESHOLDS; k++) {
+            nodes = GraphNode.getGraph(seedlist, threshold);
+            threshold = MAX_THRESHOLD * (NUM_THRESHOLDS - k) / NUM_THRESHOLDS;
+            System.out.format("\nDecreased threshold to: \033[1;32m%f\033[0m\n", threshold);
+            int time_spent = (k + 1) * 5;
+
+            for (int i = 0; i < time_spent; i++) {
+                GraphNode node = nodes.get(random.nextInt(nodes.size()));
+                double score_before = WatermelonMathUtil.calculateScore(seedlist, s);
+                flipHex(node);
+                double score_after = WatermelonMathUtil.calculateScore(seedlist, s);
+
+                String scoreString = "score by " + (score_after - score_before) + " with threshold " + threshold;
+                if (score_after < score_before) {
+                    flipHex(node);
+                    System.out.format("\033[1;31mWorsened\033[0m %s\n", scoreString);
+                } else {
+                    System.out.format("\033[1;34mImproved\033[0m %s\n", scoreString);
+                }
+            }
         }
 
         /*
@@ -82,6 +109,13 @@ public class Player extends watermelon.sim.Player {
 
 		return seedlist;
 	}
+
+    public void flipHex(GraphNode n) {
+        n.center.tetraploid = !n.center.tetraploid;
+        for (seed s : n.neighbors) {
+            s.tetraploid = !s.tetraploid;
+        }
+    }
 
     public boolean validateSeeds(ArrayList<seed> seeds) {
         for (int i = 0; i < seeds.size(); i++) {
