@@ -14,9 +14,14 @@ public class Player extends watermelon.sim.Player {
 	public static final double distoseed = 2.01;
 
 	public void init() {
-        strategy = new Strategy(new HexPackingStrategy(), 
-                new ProgressiveLabelingStrategy(Arrays.asList(new ModLabelingStrategy(41), 
-                                                              new SelfishLabelingStrategy(41))));
+        // I'm using a hex packing strategy.
+        IPackingStrategy packing = new HexPackingStrategy();
+
+        // I"m using a ProgressiveLabelingStrategy, which means do the ModLabelingStrategy first and
+        // then do the SelfishLabelingStrategy.
+        ILabelingStrategy labeling = new ProgressiveLabelingStrategy(Arrays.asList(new ModLabelingStrategy(2), 
+                                                                                   new SelfishLabelingStrategy(41)));
+        strategy = new Strategy(packing, labeling);
 	}
 
     public double getHexXOffset() {
@@ -29,8 +34,8 @@ public class Player extends watermelon.sim.Player {
 
     public static final double EPSILON = 0.001;
 
+    // the class actually responsible for making moves.
     Strategy strategy = null;
-
 	@Override
 	public ArrayList<seed> move(ArrayList<Pair> treelist, double width, double length, double s) {
         if (strategy == null) {
