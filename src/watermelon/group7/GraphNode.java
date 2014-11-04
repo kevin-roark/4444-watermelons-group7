@@ -39,4 +39,19 @@ public class GraphNode {
 
         return nodes;
     }
+
+    public seed getCenter() { return center; };
+
+    public double oppositeRatio() {
+        return (double)countOppositeNeighbors() / neighbors.size();
+    }
+    public int countOppositeNeighbors() {
+        int count = 0;
+        for (seed n : neighbors) {
+            if (n.tetraploid != center.tetraploid) {
+                count += 1;
+            }
+        }
+        return count;
+    }
 }

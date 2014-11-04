@@ -14,7 +14,9 @@ public class Player extends watermelon.sim.Player {
 	public static final double distoseed = 2.01;
 
 	public void init() {
-
+        strategy = new Strategy(new HexPackingStrategy(), 
+                new ProgressiveLabelingStrategy(Arrays.asList(new ModLabelingStrategy(41), 
+                                                              new SelfishLabelingStrategy(41))));
 	}
 
     public double getHexXOffset() {
@@ -27,51 +29,18 @@ public class Player extends watermelon.sim.Player {
 
     public static final double EPSILON = 0.001;
 
+    Strategy strategy = null;
+
 	@Override
 	public ArrayList<seed> move(ArrayList<Pair> treelist, double width, double length, double s) {
-		ArrayList<seed> seedlist = new ArrayList<seed>();
-        boolean shift = false;
-        int label = 0;
-        for (double j = distowall; j < length - distowall; j = j + getHexYOffset() + EPSILON) {
-            for (double i = distowall; i < width - distowall; i = i + distoseed + EPSILON) {
-                boolean parity = (label % 2 == 0);
-
-				Random random = new Random();
-
-                seed tmp = new seed(i, j, parity);
-
-                if (shift) {
-                    tmp.x += getHexXOffset();
-                }
-
-				boolean add = true;
-                if (tmp.x >= width - distowall) {
-                    add = false;
-                }
-				for (int f = 0; f < treelist.size(); f++) {
-					if (WatermelonMathUtil.distance(tmp, treelist.get(f)) < distotree) {
-						add = false;
-						break;
-					}
-				}
-
-
-				if (add) {
-                    //System.out.println(tmp);
-					seedlist.add(tmp);
-				}
-
-                label = (label + 1) % 2;
-			}
-            shift = !shift;
-		}
-
-        if (!validateSeeds(seedlist)) {
-            System.out.printf("Invalid setup!");
+        if (strategy == null) {
+            init();
         }
 
-        ArrayList<GraphNode> nodes = new ArrayList<GraphNode>();
+        return strategy.move(treelist, width, length, s);
+	}
 
+    public void performFlips(ArrayList<seed> seedlist, ArrayList<GraphNode> nodes, double s) {
         // flipping phase
         Random random = new Random();
         double MAX_THRESHOLD = 7;
@@ -98,17 +67,8 @@ public class Player extends watermelon.sim.Player {
                 }
             }
         }
+    }
 
-        /*
-        System.out.println("");
-        System.out.format("Seeds placed:       \033[1;32m%d\033[0m\n", seedlist.size());
-        System.out.format("Max possible seeds: \033[1;32m%d\033[0m\n", Analysis.getMaxSeedsPossible(treelist, width, length));
-        System.out.format("Packing efficiency: \033[1;32m%.2f%%\033[0m\n", 100*Analysis.calculatePackingEfficiency(seedlist, treelist, width, length));
-        System.out.println("");
-        */
-
-		return seedlist;
-	}
 
     public void flipHex(GraphNode n) {
         n.center.tetraploid = !n.center.tetraploid;
