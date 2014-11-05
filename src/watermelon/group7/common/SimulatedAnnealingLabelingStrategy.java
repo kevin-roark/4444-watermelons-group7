@@ -7,7 +7,7 @@ public class SimulatedAnnealingLabelingStrategy implements ILabelingStrategy {
     static final double DEFAULT_MAX_ENERGY = 0.00000001;
     static final int DEFAULT_MAX_K = 2000;
     static final double DEFAULT_STARTING_TEMPERATURE = 10000.0;
-    static final int DEFAULT_MAX_SEEDS_TO_FLIP = 4;
+    static final int DEFAULT_MAX_SEEDS_TO_FLIP = 2;
 
     static Random rander = new Random();
 
@@ -77,13 +77,15 @@ public class SimulatedAnnealingLabelingStrategy implements ILabelingStrategy {
     private double probability(double oldEnergy, double newEnergy, double temp) {
         if (newEnergy < oldEnergy) return 1.0;
 
+        if (newEnergy - oldEnergy < .0000001) return 0.5;
+
         double t = temp;
         if (t > startingTemperature) {
             t = startingTemperature;
         }
         double tempRatio = t / startingTemperature;
 
-        double weightedRatio = tempRatio * ((newEnergy - oldEnergy) / oldEnergy * 10);
+        double weightedRatio = tempRatio * ((newEnergy - oldEnergy) / oldEnergy * 3);
 
         return weightedRatio;
     }
@@ -91,11 +93,15 @@ public class SimulatedAnnealingLabelingStrategy implements ILabelingStrategy {
     private ArrayList<seed> neighbor(ArrayList<seed> seeds, double s) {
         ArrayList<seed> neighborSeeds = seedsCopy(seeds);
 
-        int seedsToFlip = rander.nextInt(maxSeedsToFlip - 1) + 1;
-        for (int i = 0; i < seedsToFlip; i++) {
-            seed hotSeed = neighborSeeds.get(rander.nextInt(neighborSeeds.size()));
+        SelfishLabelingStrategy labeler = new SelfishLabelingStrategy(1);
 
-            hotSeed.tetraploid = !hotSeed.tetraploid;
+        labeler.labelSeeds(neighborSeeds, s);
+
+        int seedsToFlip = rander.nextInt(maxSeedsToFlip);
+        for (int i = 0; i <= seedsToFlip; i++) {
+            seed randSeed = neighborSeeds.get(rander.nextInt(neighborSeeds.size()));
+
+            randSeed.tetraploid = !randSeed.tetraploid;
         }
 
         return neighborSeeds;
