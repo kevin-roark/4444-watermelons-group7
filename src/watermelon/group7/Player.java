@@ -18,9 +18,9 @@ public class Player extends watermelon.sim.Player {
         IPackingStrategy packing = new HexPackingStrategy();
 
         // I"m using a ProgressiveLabelingStrategy, which means do the ModLabelingStrategy first and
-        // then do the SelfishLabelingStrategy.
+        // then do the SimulatedAnnealingLabelingStrategy.
         ILabelingStrategy labeling = new ProgressiveLabelingStrategy(Arrays.asList(new ModLabelingStrategy(2), 
-                                                                                   new SelfishLabelingStrategy(41)));
+                                                                                   new SimulatedAnnealingLabelingStrategy()));
         strategy = new Strategy(packing, labeling);
 	}
 
