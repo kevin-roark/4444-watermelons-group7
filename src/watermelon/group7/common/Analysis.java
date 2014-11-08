@@ -18,7 +18,7 @@ public class Analysis {
 
         double area_available = total_area - treeArea() * trees.size();
 
-        return (int)Math.floor(area_available / seedArea());    
+        return (int)Math.floor(area_available / seedArea());
     }
 
     static double seedArea() {
@@ -44,7 +44,7 @@ public class Analysis {
         }
 
         chance = difdis / totaldis;
-        return chance + (1 - chance) * s;    
+        return chance + (1 - chance) * s;
     }
 
 	static double calculateBoardScore(ArrayList<seed> seedlist, double s) {

@@ -1,7 +1,7 @@
 PLAYER=group7
 MAP=nothingmap
-L=40
-W=50
+L=30
+W=40
 S=0.01
 GUI=false
 

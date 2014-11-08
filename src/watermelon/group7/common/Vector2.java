@@ -54,7 +54,7 @@ public class Vector2 {
         double c = Math.cos(rads);
         double s = Math.sin(rads);
 
-        return new Vector2(c*x - s*y, 
+        return new Vector2(c*x - s*y,
                            s*x + c*y);
     }
 
@@ -72,8 +72,12 @@ public class Vector2 {
     }
 
     public static Vector2 fromOrientationAndLength(double theta, double r) {
-        return new Vector2(r * Math.cos(theta), 
+        return new Vector2(r * Math.cos(theta),
                            r * Math.sin(theta));
+    }
+
+    public seed updateSeed(seed s) {
+      return new seed(this.x, this.y, s.tetraploid);
     }
 
     @Override

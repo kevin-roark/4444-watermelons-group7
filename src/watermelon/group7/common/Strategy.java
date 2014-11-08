@@ -6,10 +6,17 @@ import watermelon.sim.*;
 public class Strategy extends Player {
     IPackingStrategy  packing;
     ILabelingStrategy labeling;
+    IJigglingStrategy jiggling;
 
     public Strategy(IPackingStrategy packing, ILabelingStrategy labeling) {
         this.packing = packing;
         this.labeling = labeling;
+    }
+
+    public Strategy(IPackingStrategy packing, ILabelingStrategy labeling, IJigglingStrategy jiggler) {
+        this.packing = packing;
+        this.labeling = labeling;
+        this.jiggling = jiggler;
     }
 
     public void init() {
@@ -19,7 +26,13 @@ public class Strategy extends Player {
         ArrayList<seed> seeds = packing.generatePacking(trees, w, l);
 
         labeling.labelSeeds(seeds, s);
+
+        if (this.jiggling != null) {
+          jigger.jiggleSeeds(seeds, trees, w, l, s);
+        }
+
         printSummary(seeds, trees, w, l, s);
+
         return seeds;
     }
 
