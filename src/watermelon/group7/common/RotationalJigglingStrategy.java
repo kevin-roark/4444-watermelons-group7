@@ -30,10 +30,26 @@ public class RotationalJigglingStrategy implements IJigglingStrategy {
         for (Seed mySeed : rotationalCandidates) {
             List<Seed> relevantNeighbors = neighborsToRotateAround(mySeed);
 
+            seed greatSeed = getseedofSeed(mySeed, seeds);
             jiggleSeed(mySeed, relevantNeighbors);
+
+            updateSeed(greatSeed, mySeed);
         }
 
         return seeds;
+    }
+
+    seed getseedofSeed(Seed needle, ArrayList<seed> haystack) {
+      double best = Double.POSITIVE_INFINITY;
+      seed result = null;
+      for (seed s : haystack) {
+        double d = WatermelonMathUtil.distance(s, needle);
+        if (d < best) {
+          best = d;
+          result = s;
+        }
+      }
+      return result;
     }
 
     private void jiggleSeed(Seed mySeed, List<Seed> relevantNeighbors) {
@@ -45,6 +61,8 @@ public class RotationalJigglingStrategy implements IJigglingStrategy {
         // find the best rotation about each neighbor
         for (Seed neighbor : relevantNeighbors) {
             if (!anyRotationDirectionIsValid(mySeed, neighbor)) continue;
+
+            updateSeed(mySeed, originalSeedCopy);
 
             boolean rotatePositively = shouldRotatePositively(mySeed, neighbor, s);
             double thetaDelta = rotatePositively? THETA_DELTA : -THETA_DELTA;
@@ -61,6 +79,7 @@ public class RotationalJigglingStrategy implements IJigglingStrategy {
                     break;
                 }
 
+                updateSeed(mySeed, originalSeedCopy);
                 newScore = rotatedScore;
                 theta += thetaDelta;
                 finalSeed = rotatedSeed;
@@ -80,7 +99,13 @@ public class RotationalJigglingStrategy implements IJigglingStrategy {
             }
         }
 
-        System.out.printf("best: %s // original: %s // diff: %f\n", bestSeed, originalSeedCopy, (bestScore - currentScore));
+        double scoreDiff = bestScore - currentScore;
+        if (scoreDiff > 0) {
+            System.out.printf("GOOD::: best: %s // original: %s // diff: %f\n", bestSeed, originalSeedCopy, bestScore);
+        }
+        else if (scoreDiff < 0) {
+            System.out.printf("BAD::: best: %s // original: %s // diff: %f\n", bestSeed, originalSeedCopy, bestScore);
+        }
 
         updateSeed(mySeed, bestSeed);
     }
