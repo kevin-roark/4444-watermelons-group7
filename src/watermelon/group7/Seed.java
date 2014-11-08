@@ -4,6 +4,12 @@ import watermelon.sim.seed;
 import watermelon.group7.common.Vector2;
 
 public class Seed extends seed {
+    public Seed(seed s) {
+        this.x = s.x;
+        this.y = s.y;
+        this.tetraploid = s.tetraploid;
+    }
+
     public boolean equals(Object obj) {
         if (!(obj instanceof Seed))
             return false;

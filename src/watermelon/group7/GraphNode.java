@@ -30,7 +30,7 @@ public class GraphNode {
         return getGraph(seeds, THRESHOLD_DISTANCE);
     }
 
-    public static HashMap<Seed, ArrayList<Seed>> getMapGraph(ArrayList<Seed> seeds) {
+    public static HashMap<Seed, ArrayList<Seed>> getMapGraph(ArrayList<seed> seeds) {
         return getMapGraph(seeds, THRESHOLD_DISTANCE);
     }
 
@@ -44,12 +44,16 @@ public class GraphNode {
         return nodes;
     }
 
-    public static HashMap<Seed, ArrayList<Seed>> getMapGraph(ArrayList<Seed> seeds, double threshold) {
+    public static HashMap<Seed, ArrayList<Seed>> getMapGraph(ArrayList<seed> seeds, double threshold) {
         HashMap<Seed, ArrayList<Seed>> map = new HashMap<Seed, ArrayList<Seed>>();
 
-        for (Seed seed : seeds) {
-            GraphNode node = fromAllSeeds(seed, seeds, threshold);
-            map.put(seed, node.neighbors);
+        for (seed s : seeds) {
+            GraphNode node = fromAllSeeds(s, seeds, threshold);
+            ArrayList<Seed> neighbors = new ArrayList<Seed>();
+            for (seed neighbor : node.neighbors) {
+                neighbors.add(new Seed(neighbor));
+            }
+            map.put(new Seed(s), neighbors);
         }
 
         return map;
