@@ -1,5 +1,5 @@
 PLAYER=group7
-MAP=nothingmap
+MAP=mapgroup3
 L=30
 W=40
 S=0.01

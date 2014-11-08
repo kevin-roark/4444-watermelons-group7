@@ -10,19 +10,26 @@ public class Seed extends seed {
         this.tetraploid = s.tetraploid;
     }
 
+    public Seed(double x, double y, boolean t) {
+      this.x = x;
+      this.y = y;
+      this.tetraploid = t;
+    }
+
+    @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Seed))
+        if (!(obj instanceof seed))
             return false;
         if (obj == this)
             return true;
 
-        Seed rhs = (Seed)obj;
-        return this.x == rhs.x & this.y == rhs.y;
+        seed rhs = (seed) obj;
+        return Math.round(this.x) == Math.round(rhs.x) & Math.round(this.y) == Math.round(rhs.y);
     }
 
     @Override
     public int hashCode() {
-        return Double.valueOf(Math.round(this.x) * Math.round(this.y)).hashCode();    
+        return Double.valueOf(Math.round(this.x) * Math.round(this.y)).hashCode();
     }
 
     public Vector2 position() {

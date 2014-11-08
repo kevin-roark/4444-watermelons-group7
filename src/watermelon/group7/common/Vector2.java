@@ -3,6 +3,8 @@ package watermelon.group7.common;
 import watermelon.sim.Pair;
 import watermelon.sim.seed;
 
+import watermelon.group7.Seed;
+
 public class Vector2 {
     public double x;
     public double y;
@@ -76,8 +78,12 @@ public class Vector2 {
                            r * Math.sin(theta));
     }
 
-    public seed updateSeed(seed s) {
-      return new seed(this.x, this.y, s.tetraploid);
+    public Seed updateSeed(seed s) {
+      return new Seed(this.x, this.y, s.tetraploid);
+    }
+
+    public Seed updateSeed(Seed s) {
+      return new Seed(this.x, this.y, s.tetraploid);
     }
 
     @Override

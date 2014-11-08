@@ -24,7 +24,7 @@ public class Player extends watermelon.sim.Player {
 
 				IJigglingStrategy jiggling = new RotationalJigglingStrategy();
 
-        strategy = new Strategy(packing, labeling, jiggling);
+        strategy = new Strategy(packing, labeling);
 	}
 
     public double getHexXOffset() {

@@ -1,8 +1,7 @@
 
 package watermelon.group7.common;
 
-import watermelon.sim.Pair;
-import watermelon.sim.Point;
+import watermelon.sim.*;
 
 import watermelon.group7.*;
 import java.util.*;
@@ -28,10 +27,10 @@ public class RotationalJigglingStrategy implements IJigglingStrategy {
         this.graph = GraphNode.getMapGraph(seeds);
         List<Seed> rotationalCandidates = rotationalCandidates(this.graph);
 
-        for (Seed seed : rotationalCandidates) {
-            List<Seed> relevantNeighbors = neighborsToRotateAround(seed);
+        for (Seed mySeed : rotationalCandidates) {
+            List<Seed> relevantNeighbors = neighborsToRotateAround(mySeed);
 
-            jiggleSeed(seed, relevantNeighbors);
+            jiggleSeed(mySeed, relevantNeighbors);
         }
 
         return seeds;
@@ -39,9 +38,9 @@ public class RotationalJigglingStrategy implements IJigglingStrategy {
 
     private void jiggleSeed(Seed mySeed, List<Seed> relevantNeighbors) {
         double currentScore = Analysis.calculateSeedScore(mySeed, seeds, s);
-        seed originalSeedCopy = seedCopy(mySeed);
+        Seed originalSeedCopy = seedCopy(mySeed);
 
-        ArrayList<seed> rotatedNeighborSeeds = new ArrayList<Seed>();
+        ArrayList<Seed> rotatedNeighborSeeds = new ArrayList<Seed>();
 
         // find the best rotation about each neighbor
         for (Seed neighbor : relevantNeighbors) {
@@ -50,9 +49,9 @@ public class RotationalJigglingStrategy implements IJigglingStrategy {
 
             double theta = thetaDelta;
             double newScore = currentScore;
-            seed finalSeed = mySeed;
+            Seed finalSeed = mySeed;
             do {
-                seed rotatedSeed = rotateSeed(mySeed, neighbor, theta);
+                Seed rotatedSeed = rotateSeed(mySeed, neighbor, theta);
                 updateSeed(mySeed, rotatedSeed);
 
                 double rotatedScore = Analysis.calculateSeedScore(rotatedSeed, seeds, s);
@@ -70,8 +69,8 @@ public class RotationalJigglingStrategy implements IJigglingStrategy {
 
         // find the neighbor that gave us best results
         double bestScore = currentScore;
-        seed bestSeed = originalSeedCopy;
-        for (seed rotatedSeed : rotatedNeighborSeeds) {
+        Seed bestSeed = originalSeedCopy;
+        for (Seed rotatedSeed : rotatedNeighborSeeds) {
             double rotatedScore = Analysis.calculateSeedScore(rotatedSeed, seeds, s);
             if (rotatedScore > bestScore) {
                 bestScore = rotatedScore;
@@ -85,38 +84,40 @@ public class RotationalJigglingStrategy implements IJigglingStrategy {
     private static List<Seed> rotationalCandidates(HashMap<Seed, ArrayList<Seed>> graph) {
         ArrayList<Seed> candidates = new ArrayList<Seed>();
 
-        for (Seed seed : graph.keySet()) {
-          ArrayList<Seed> neighbors = graph.get(seed);
+        for (Seed mySeed : graph.keySet()) {
+          ArrayList<Seed> neighbors = graph.get(mySeed);
 
           if (neighbors.size() <= 4) {
-              candidates.add(seed);
+              candidates.add(mySeed);
           }
         }
 
         return candidates;
     }
 
-    private List<Seed> neighborsToRotateAround(Seed seed) {
+    private List<Seed> neighborsToRotateAround(Seed mySeed) {
         ArrayList<Seed> rotateableNeighbors = new ArrayList<Seed>();
 
-        ArrayList<Seed> neighbors = graph.get(seed);
+        ArrayList<Seed> neighbors = graph.get(mySeed);
 
         for (Seed neighbor : neighbors) {
             ArrayList<Seed> doubleNeighbors = graph.get(neighbor);
 
-            if (doubleNeighbors.size() <= 5 && neighbor.tetraploid == seed.tetraploid) {
+            if (doubleNeighbors != null && doubleNeighbors.size() <= 5 && neighbor.tetraploid == mySeed.tetraploid) {
               rotateableNeighbors.add(neighbor);
             }
         }
 
+        System.out.println("rotateable neighbors size: " + rotateableNeighbors.size());
+
         return rotateableNeighbors;
     }
 
-    private boolean shouldRotatePositively(Seed seed, Seed origin, double s) {
-      double currentScore = Analysis.calculateSeedScore(seed, seeds, s);
+    private boolean shouldRotatePositively(Seed mySeed, Seed origin, double s) {
+      double currentScore = Analysis.calculateSeedScore(mySeed, seeds, s);
 
-      seed positiveRotationSeed = rotateSeed(seed, origin, THETA_DELTA);
-      seed negativeRotationSeed = rotateSeed(seed, origin, -THETA_DELTA);
+      Seed positiveRotationSeed = rotateSeed(mySeed, origin, THETA_DELTA);
+      Seed negativeRotationSeed = rotateSeed(mySeed, origin, -THETA_DELTA);
 
       double positiveScore = Analysis.calculateSeedScore(positiveRotationSeed, seeds, s);
       double negativeScore = Analysis.calculateSeedScore(negativeRotationSeed, seeds, s);
@@ -124,7 +125,7 @@ public class RotationalJigglingStrategy implements IJigglingStrategy {
       return positiveScore >= negativeScore;
     }
 
-    private static seed rotateSeed(seed s, seed origin, double radians) {
+    private static Seed rotateSeed(seed s, seed origin, double radians) {
         Vector2 seedVector = new Vector2(s);
         Vector2 originVector = new Vector2(origin);
 
@@ -137,8 +138,8 @@ public class RotationalJigglingStrategy implements IJigglingStrategy {
       oldSeed.tetraploid = newSeed.tetraploid;
     }
 
-    private static seed seedCopy(seed mySeed) {
-      return new seed(mySeed.x, mySeed.y, mySeed.tetraploid);
+    private static Seed seedCopy(seed mySeed) {
+      return new Seed(mySeed.x, mySeed.y, mySeed.tetraploid);
     }
 
 }
