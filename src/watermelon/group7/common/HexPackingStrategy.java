@@ -10,21 +10,21 @@ public class HexPackingStrategy implements IPackingStrategy {
     }
 
     double getHexYOffset() {
-        return Constants.seed_diameter * Math.cos(Math.PI / 6.0) - 0.00095;
+        return Constants.seed_diameter * Math.cos(Math.PI / 6.0);
     }
 
-    public static final double EPSILON = 0.001;
+    public static final double EPSILON = 0;
 
     public ArrayList<seed> generatePacking(ArrayList<Pair> trees, double width, double height) {
         ArrayList<seed> results = new ArrayList<seed>();
 
         boolean shift = false;
-        for (double y = Constants.wall_spacing; 
-                    y < height - Constants.wall_spacing; 
+        for (double y = Constants.wall_spacing;
+                    y < height - Constants.wall_spacing;
                     y = y + getHexYOffset() + EPSILON) {
 
-            for (double x = Constants.wall_spacing; 
-                        x < width - Constants.wall_spacing; 
+            for (double x = Constants.wall_spacing;
+                        x < width - Constants.wall_spacing;
                         x = x + Constants.seed_diameter + EPSILON) {
                 seed tmp = new seed(x, y, false);
 
