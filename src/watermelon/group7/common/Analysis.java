@@ -67,28 +67,36 @@ public class Analysis {
     }
 
 	static boolean validateSeed(seed s, ArrayList<seed> seeds, ArrayList<Pair> trees, double W, double L) {
-		for (seed other : seeds) {
-            if (s == other) continue;
+		  return validateSeeds(s, seeds, trees, W, L, true);
+	}
+
+  static boolean silentlyValidateSeeds(seed s, ArrayList<seed> seeds, ArrayList<Pair> trees, double W, double L) {
+      return validateSeeds(s, seeds, trees, W, L, false);
+  }
+
+  static boolean validateSeeds(seed s, ArrayList<seed> seeds, ArrayList<Pair> trees, double W, double L, boolean verbose) {
+    for (seed other : seeds) {
+            if (s == other || s.equals(other)) continue;
 
             double dist = WatermelonMathUtil.distance(s, other);
             if (dist < Constants.seed_diameter) {
-                System.out.printf("Seeds too close! The distance between two seeds is %f.\n", dist);
+                if (verbose) System.out.printf("Seeds too close! The distance between two seeds is %f.\n", dist);
                 return false;
             } else {
                 //System.out.printf("YO. The distance between two seeds is %f.\n", dist);
             }
-		}
+    }
 
         if ((s.x < Constants.wall_spacing || W - s.x < Constants.wall_spacing) ||
             (s.y < Constants.wall_spacing || L - s.y < Constants.wall_spacing)) {
-            System.out.printf("The seed at (%f, %f) is too close to the wall\n", s.x, s.y);
+            if (verbose) System.out.printf("The seed at (%f, %f) is too close to the wall\n", s.x, s.y);
             return false;
         }
 
-		for (Pair tree : trees) {
+    for (Pair tree : trees) {
             double dist = WatermelonMathUtil.distance(s, tree);
             if (dist < Constants.tree_diameter) {
-                System.out.printf("The seed at (%f, %f) is too close to the tree at (%f, %f), %f\n",
+                if (verbose) System.out.printf("The seed at (%f, %f) is too close to the tree at (%f, %f), %f\n",
                                 s.x,
                                 s.y,
                                 tree.x,
@@ -96,8 +104,8 @@ public class Analysis {
                                 dist);
                 return false;
             }
-		}
+    }
 
-		return true;
-	}
+    return true;
+  }
 }

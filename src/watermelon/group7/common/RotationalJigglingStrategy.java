@@ -8,7 +8,7 @@ import java.util.*;
 
 public class RotationalJigglingStrategy implements IJigglingStrategy {
 
-    private static final double THETA_DELTA = 0.01;
+    private static final double THETA_DELTA = 0.005;
 
     double w;
     double h;
@@ -44,6 +44,8 @@ public class RotationalJigglingStrategy implements IJigglingStrategy {
 
         // find the best rotation about each neighbor
         for (Seed neighbor : relevantNeighbors) {
+            if (!anyRotationDirectionIsValid(mySeed, neighbor)) continue;
+
             boolean rotatePositively = shouldRotatePositively(mySeed, neighbor, s);
             double thetaDelta = rotatePositively? THETA_DELTA : -THETA_DELTA;
 
@@ -55,7 +57,7 @@ public class RotationalJigglingStrategy implements IJigglingStrategy {
                 updateSeed(mySeed, rotatedSeed);
 
                 double rotatedScore = Analysis.calculateSeedScore(rotatedSeed, seeds, s);
-                if (!Analysis.validateSeed(mySeed, seeds, trees, w, h) || rotatedScore <= newScore) {
+                if (!Analysis.silentlyValidateSeeds(mySeed, seeds, trees, w, h) || rotatedScore <= newScore) {
                     break;
                 }
 
@@ -77,6 +79,8 @@ public class RotationalJigglingStrategy implements IJigglingStrategy {
                 bestSeed = rotatedSeed;
             }
         }
+
+        System.out.printf("best: %s // original: %s // diff: %f\n", bestSeed, originalSeedCopy, (bestScore - currentScore));
 
         updateSeed(mySeed, bestSeed);
     }
@@ -108,28 +112,48 @@ public class RotationalJigglingStrategy implements IJigglingStrategy {
             }
         }
 
-        System.out.println("rotateable neighbors size: " + rotateableNeighbors.size());
-
         return rotateableNeighbors;
     }
 
+    private boolean rotationIsValid(Seed mySeed, Seed origin, double theta) {
+        Seed rotatedSeed = rotateSeed(mySeed, origin, theta);
+        return Analysis.silentlyValidateSeeds(rotatedSeed, seeds, trees, w, h);
+    }
+
+    private boolean anyRotationDirectionIsValid(Seed mySeed, Seed origin) {
+        boolean canRotate = rotationIsValid(mySeed, origin, THETA_DELTA) || rotationIsValid(mySeed, origin, -THETA_DELTA);
+        return canRotate;
+    }
+
     private boolean shouldRotatePositively(Seed mySeed, Seed origin, double s) {
-      double currentScore = Analysis.calculateSeedScore(mySeed, seeds, s);
+        double currentScore = Analysis.calculateSeedScore(mySeed, seeds, s);
 
-      Seed positiveRotationSeed = rotateSeed(mySeed, origin, THETA_DELTA);
-      Seed negativeRotationSeed = rotateSeed(mySeed, origin, -THETA_DELTA);
+        double positiveScore, negativeScore;
 
-      double positiveScore = Analysis.calculateSeedScore(positiveRotationSeed, seeds, s);
-      double negativeScore = Analysis.calculateSeedScore(negativeRotationSeed, seeds, s);
+        if (!rotationIsValid(mySeed, origin, THETA_DELTA)) {
+            positiveScore = 0.0f;
+        } else {
+            Seed positiveRotationSeed = rotateSeed(mySeed, origin, THETA_DELTA);
+            positiveScore = Analysis.calculateSeedScore(positiveRotationSeed, seeds, s);
+        }
 
-      return positiveScore >= negativeScore;
+        if (!rotationIsValid(mySeed, origin, -THETA_DELTA)) {
+            negativeScore = 0.0f;
+        } else {
+            Seed negativeRotationSeed = rotateSeed(mySeed, origin, THETA_DELTA);
+            negativeScore = Analysis.calculateSeedScore(negativeRotationSeed, seeds, s);
+        }
+
+        return positiveScore >= negativeScore;
     }
 
     private static Seed rotateSeed(seed s, seed origin, double radians) {
         Vector2 seedVector = new Vector2(s);
         Vector2 originVector = new Vector2(origin);
 
-        return seedVector.rotateRelative(originVector, radians).updateSeed(s);
+        Vector2 rotatedSeed = seedVector.rotateAbout(originVector, radians);
+
+        return rotatedSeed.updateSeed(s);
     }
 
     private static void updateSeed(seed oldSeed, seed newSeed) {

@@ -73,6 +73,11 @@ public class Vector2 {
         return adjusted.rotate(theta);
     }
 
+    public Vector2 rotateAbout(Vector2 origin, double theta) {
+      Vector2 relative = rotateRelative(origin, theta);
+      return relative.add(origin);
+    }
+
     public static Vector2 fromOrientationAndLength(double theta, double r) {
         return new Vector2(r * Math.cos(theta),
                            r * Math.sin(theta));

@@ -28,6 +28,11 @@ public class Seed extends seed {
     }
 
     @Override
+    public String toString() {
+      return "(" + x + "," + y + ")";
+    }
+
+    @Override
     public int hashCode() {
         return Double.valueOf(Math.round(this.x) * Math.round(this.y)).hashCode();
     }
