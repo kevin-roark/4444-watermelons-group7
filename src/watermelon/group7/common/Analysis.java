@@ -29,21 +29,22 @@ public class Analysis {
     }
 
     static double calculateSeedScore(seed seed, ArrayList<seed> seedlist, double s) {
-        double chance   = 0.0;
-        double totaldis = 0.0;
-        double difdis   = 0.0;
+        double chance = 0.0;
+
+        double total_distances           = 0.0;
+        double opposite_ploidy_distances = 0.0;
 
         for (seed other : seedlist) {
             if (other != seed) {
                 if (seed.tetraploid != other.tetraploid) {
-                    difdis += Math.pow(WatermelonMathUtil.distance(seed, other), -2);
+                    opposite_ploidy_distances += Math.pow(WatermelonMathUtil.distance(seed, other), -2);
                 }
 
-                totaldis += Math.pow(WatermelonMathUtil.distance(seed, other), -2);
+                total_distances += Math.pow(WatermelonMathUtil.distance(seed, other), -2);
             }
         }
 
-        chance = difdis / totaldis;
+        chance = opposite_ploidy_distances / total_distances;
         return chance + (1 - chance) * s;
     }
 
@@ -53,5 +54,50 @@ public class Analysis {
             score += calculateSeedScore(seed, seedlist, s);
         }
         return score;
+	}
+
+	static boolean validateBoard(ArrayList<seed> seeds, ArrayList<Pair> trees, double W, double L) {
+        boolean result = true;
+
+        for (seed s : seeds) {
+            result &= validateSeed(s, seeds, trees, W, L);
+        }
+
+        return result;
+    }
+
+	static boolean validateSeed(seed s, ArrayList<seed> seeds, ArrayList<Pair> trees, double W, double L) {
+		for (seed other : seeds) {
+            if (s == other) continue;
+
+            double dist = WatermelonMathUtil.distance(s, other);
+            if (dist < Constants.seed_diameter) {
+                System.out.printf("Seeds too close! The distance between two seeds is %f.\n", dist);
+                return false;
+            } else {
+                //System.out.printf("YO. The distance between two seeds is %f.\n", dist);
+            }
+		}
+
+        if ((s.x < Constants.wall_spacing || W - s.x < Constants.wall_spacing) ||
+            (s.y < Constants.wall_spacing || L - s.y < Constants.wall_spacing)) {
+            System.out.printf("The seed at (%f, %f) is too close to the wall\n", s.x, s.y);
+            return false;
+        }
+
+		for (Pair tree : trees) {
+            double dist = WatermelonMathUtil.distance(s, tree);
+            if (dist < Constants.tree_diameter) {
+                System.out.printf("The seed at (%f, %f) is too close to the tree at (%f, %f), %f\n",
+                                s.x,
+                                s.y,
+                                tree.x,
+                                tree.y,
+                                dist);
+                return false;
+            }
+		}
+
+		return true;
 	}
 }

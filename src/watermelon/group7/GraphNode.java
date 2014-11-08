@@ -5,8 +5,8 @@ import watermelon.sim.*;
 import java.util.*;
 
 public class GraphNode {
-    seed center;
-    ArrayList<seed> neighbors;
+    public seed center;
+    public ArrayList<seed> neighbors;
 
     public GraphNode(seed s, ArrayList<seed> neighbors) {
         center = s;
@@ -30,6 +30,10 @@ public class GraphNode {
         return getGraph(seeds, THRESHOLD_DISTANCE);
     }
 
+    public static HashMap<Seed, ArrayList<Seed>> getMapGraph(ArrayList<Seed> seeds) {
+        return getMapGraph(seeds, THRESHOLD_DISTANCE);
+    }
+
     public static ArrayList<GraphNode> getGraph(ArrayList<seed> seeds, double threshold) {
         ArrayList<GraphNode> nodes = new ArrayList<GraphNode>();
 
@@ -38,6 +42,17 @@ public class GraphNode {
         }
 
         return nodes;
+    }
+
+    public static HashMap<Seed, ArrayList<Seed>> getMapGraph(ArrayList<Seed> seeds, double threshold) {
+        HashMap<Seed, ArrayList<Seed>> map = new HashMap<Seed, ArrayList<Seed>>();
+
+        for (Seed seed : seeds) {
+            GraphNode node = fromAllSeeds(seed, seeds, threshold);
+            map.put(seed, node.neighbors);
+        }
+
+        return map;
     }
 
     public seed getCenter() { return center; };

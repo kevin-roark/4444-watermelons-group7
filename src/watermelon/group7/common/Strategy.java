@@ -28,7 +28,7 @@ public class Strategy extends Player {
         labeling.labelSeeds(seeds, s);
 
         if (this.jiggling != null) {
-          jigger.jiggleSeeds(seeds, trees, w, l, s);
+          jiggling.jiggleSeeds(seeds, trees, w, l, s);
         }
 
         printSummary(seeds, trees, w, l, s);
