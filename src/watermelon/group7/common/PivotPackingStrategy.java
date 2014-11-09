@@ -31,7 +31,7 @@ public class PivotPackingStrategy implements IPackingStrategy {
             free.addAll(free_seeds);
             for (seed s : free) {
                 ArrayList<seed> placed = placeRing(new Vector2(s), orientation, theta_delta, seeds, trees, width, height);
-                System.err.format("Placed %d seeds.\n", placed.size());
+                //System.err.format("Placed %d seeds.\n", placed.size());
                 free_seeds.remove(s);
                 free_seeds.addAll(placed);
             }
@@ -57,7 +57,7 @@ public class PivotPackingStrategy implements IPackingStrategy {
                 placed.add(potential);
                 addSeed(potential, seeds);
             } else {
-                System.out.println("Failed to validate a seed.");
+                //System.out.println("Failed to validate a seed.");
             }
         }
 
@@ -75,7 +75,7 @@ public class PivotPackingStrategy implements IPackingStrategy {
             seed tmp = new seed(placement.x, placement.y, false);
             epsilon -= 1e-6;
 
-            check = Analysis.validateSeed(tmp, seeds, trees, width, height);
+            check = Analysis.silentlyValidateSeed(tmp, seeds, trees, width, height);
             if (check) {
                 closest = tmp;
                 break; // KILL IT

@@ -6,7 +6,9 @@ import watermelon.sim.*;
 
 public class CheckerboardStrategy extends Strategy {
     public CheckerboardStrategy() {
-        super(new CheckboardPackingStrategy(), new SelfishLabelingStrategy());
+        super(new CheckboardPackingStrategy(), new SelfishLabelingStrategy(), new RotationalJigglingStrategy());
+
+        this.name = "CHECKERBOARD";
     }
 
     public static class CheckboardPackingStrategy implements IPackingStrategy {
@@ -14,8 +16,8 @@ public class CheckerboardStrategy extends Strategy {
             ArrayList<seed> results = new ArrayList<seed>();
 
             boolean row_value = true;
-            for (double y = Constants.wall_spacing; 
-                        y < height - Constants.wall_spacing; 
+            for (double y = Constants.wall_spacing;
+                        y < height - Constants.wall_spacing;
                         y += Constants.seed_diameter) {
                 boolean value = row_value;
                 row_value = !row_value;

@@ -8,15 +8,21 @@ public class Strategy extends Player {
     ILabelingStrategy labeling;
     IJigglingStrategy jiggling;
 
+    public String name;
+
     public Strategy(IPackingStrategy packing, ILabelingStrategy labeling) {
-        this.packing = packing;
-        this.labeling = labeling;
+        this(packing, labeling, null);
     }
 
     public Strategy(IPackingStrategy packing, ILabelingStrategy labeling, IJigglingStrategy jiggler) {
+        this(packing, labeling, jiggler, "STRATEGY");
+    }
+
+    public Strategy(IPackingStrategy packing, ILabelingStrategy labeling, IJigglingStrategy jiggler, String name) {
         this.packing = packing;
         this.labeling = labeling;
         this.jiggling = jiggler;
+        this.name = name;
     }
 
     public void init() {
