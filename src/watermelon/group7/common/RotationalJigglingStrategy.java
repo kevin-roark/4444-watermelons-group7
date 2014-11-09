@@ -10,6 +10,10 @@ public class RotationalJigglingStrategy implements IJigglingStrategy {
 
     private static final double THETA_DELTA = 0.005;
 
+    private static final int MAX_PASSES = 10;
+
+    int passes;
+
     double w;
     double h;
     double s;
@@ -17,23 +21,41 @@ public class RotationalJigglingStrategy implements IJigglingStrategy {
     ArrayList<Pair> trees;
     HashMap<Seed, ArrayList<Seed>> graph;
 
+    public RotationalJigglingStrategy() {
+        this.passes = MAX_PASSES;
+    }
+
+    public RotationalJigglingStrategy(int passes) {
+        this.passes = passes;
+    }
+
     public ArrayList<seed> jiggleSeeds(ArrayList<seed> seeds, ArrayList<Pair> trees, double width, double height, double s) {
         this.w = width;
         this.h = height;
         this.s = s;
-        this.seeds = seeds;
         this.trees = trees;
+        this.seeds = seeds;
 
-        this.graph = GraphNode.getMapGraph(seeds);
-        List<Seed> rotationalCandidates = rotationalCandidates(this.graph);
+        double currentScore = Analysis.calculateBoardScore(this.seeds, s);
+        double newScore = currentScore + 0.000001;
 
-        for (Seed mySeed : rotationalCandidates) {
-            List<Seed> relevantNeighbors = neighborsToRotateAround(mySeed);
+        for (int i = 0; i < this.passes && newScore > currentScore; i++) {
+            this.graph = GraphNode.getMapGraph(seeds);
+            List<Seed> rotationalCandidates = rotationalCandidates(this.graph);
 
-            seed greatSeed = getseedofSeed(mySeed, seeds);
-            jiggleSeed(greatSeed, mySeed, relevantNeighbors);
+            for (Seed mySeed : rotationalCandidates) {
+                List<Seed> relevantNeighbors = neighborsToRotateAround(mySeed);
 
-            updateSeed(greatSeed, mySeed);
+                seed greatSeed = getseedofSeed(mySeed, seeds);
+                jiggleSeed(greatSeed, mySeed, relevantNeighbors);
+
+                updateSeed(greatSeed, mySeed);
+            }
+
+            currentScore = newScore;
+            newScore = Analysis.calculateBoardScore(this.seeds, s);
+
+            System.out.println("FINISHED PASS " + i + " WITH INCREMENTAL GAIN " + (newScore - currentScore));
         }
 
         return seeds;
