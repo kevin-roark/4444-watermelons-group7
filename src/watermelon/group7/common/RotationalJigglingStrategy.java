@@ -31,7 +31,7 @@ public class RotationalJigglingStrategy implements IJigglingStrategy {
             List<Seed> relevantNeighbors = neighborsToRotateAround(mySeed);
 
             seed greatSeed = getseedofSeed(mySeed, seeds);
-            jiggleSeed(mySeed, relevantNeighbors);
+            jiggleSeed(greatSeed, mySeed, relevantNeighbors);
 
             updateSeed(greatSeed, mySeed);
         }
@@ -52,30 +52,31 @@ public class RotationalJigglingStrategy implements IJigglingStrategy {
       return result;
     }
 
-    private void jiggleSeed(Seed mySeed, List<Seed> relevantNeighbors) {
-        double currentScore = Analysis.calculateSeedScore(mySeed, seeds, s);
+    private void jiggleSeed(seed originalSeed, Seed mySeed, List<Seed> relevantNeighbors) {
+        double currentScore = Analysis.calculateBoardScore(seeds, s);
         Seed originalSeedCopy = seedCopy(mySeed);
 
         ArrayList<Seed> rotatedNeighborSeeds = new ArrayList<Seed>();
 
         // find the best rotation about each neighbor
         for (Seed neighbor : relevantNeighbors) {
-            if (!anyRotationDirectionIsValid(mySeed, neighbor)) continue;
+            if (!anyRotationDirectionIsValid(originalSeed, neighbor)) continue;
 
-            updateSeed(mySeed, originalSeedCopy);
-
-            boolean rotatePositively = shouldRotatePositively(mySeed, neighbor, s);
+            boolean rotatePositively = shouldRotatePositively(originalSeed, neighbor, s);
             double thetaDelta = rotatePositively? THETA_DELTA : -THETA_DELTA;
+
+            //System.out.printf("Rotating %s around %s with %f\n", originalSeedCopy, neighbor, thetaDelta);
 
             double theta = thetaDelta;
             double newScore = currentScore;
-            Seed finalSeed = mySeed;
+            Seed finalSeed = null;
             do {
                 Seed rotatedSeed = rotateSeed(mySeed, neighbor, theta);
                 updateSeed(mySeed, rotatedSeed);
+                updateSeed(originalSeed, mySeed);
 
-                double rotatedScore = Analysis.calculateSeedScore(rotatedSeed, seeds, s);
-                if (!Analysis.silentlyValidateSeeds(mySeed, seeds, trees, w, h) || rotatedScore <= newScore) {
+                double rotatedScore = Analysis.calculateBoardScore(seeds, s);
+                if (!Analysis.validateBoard(seeds, trees, w, h) || rotatedScore <= newScore) {
                     break;
                 }
 
@@ -85,14 +86,21 @@ public class RotationalJigglingStrategy implements IJigglingStrategy {
                 finalSeed = rotatedSeed;
             } while (true);
 
-            rotatedNeighborSeeds.add(finalSeed);
+            if (finalSeed != null) {
+              //System.out.printf("Score diff from above: %f\n", (newScore - currentScore));
+              rotatedNeighborSeeds.add(finalSeed);
+            }
         }
 
         // find the neighbor that gave us best results
         double bestScore = currentScore;
         Seed bestSeed = originalSeedCopy;
+
         for (Seed rotatedSeed : rotatedNeighborSeeds) {
-            double rotatedScore = Analysis.calculateSeedScore(rotatedSeed, seeds, s);
+            updateSeed(originalSeed, rotatedSeed);
+            double rotatedScore = Analysis.calculateBoardScore(seeds, s);
+            updateSeed(originalSeed, originalSeedCopy);
+
             if (rotatedScore > bestScore) {
                 bestScore = rotatedScore;
                 bestSeed = rotatedSeed;
@@ -101,13 +109,14 @@ public class RotationalJigglingStrategy implements IJigglingStrategy {
 
         double scoreDiff = bestScore - currentScore;
         if (scoreDiff > 0) {
-            System.out.printf("GOOD::: best: %s // original: %s // diff: %f\n", bestSeed, originalSeedCopy, bestScore);
+            //System.out.printf("GOOD::: best: %s // original: %s // diff: %f\n", bestSeed, originalSeedCopy, scoreDiff);
         }
         else if (scoreDiff < 0) {
-            System.out.printf("BAD::: best: %s // original: %s // diff: %f\n", bestSeed, originalSeedCopy, bestScore);
+            System.out.printf("BAD::: best: %s // original: %s // diff: %f\n", bestSeed, originalSeedCopy, scoreDiff);
         }
 
         updateSeed(mySeed, bestSeed);
+        updateSeed(originalSeed, bestSeed);
     }
 
     private static List<Seed> rotationalCandidates(HashMap<Seed, ArrayList<Seed>> graph) {
@@ -130,9 +139,11 @@ public class RotationalJigglingStrategy implements IJigglingStrategy {
         ArrayList<Seed> neighbors = graph.get(mySeed);
 
         for (Seed neighbor : neighbors) {
+            if (neighbor.tetraploid == mySeed.tetraploid) continue;
+
             ArrayList<Seed> doubleNeighbors = graph.get(neighbor);
 
-            if (doubleNeighbors != null && doubleNeighbors.size() <= 5 && neighbor.tetraploid == mySeed.tetraploid) {
+            if (doubleNeighbors != null && doubleNeighbors.size() <= 5) {
               rotateableNeighbors.add(neighbor);
             }
         }
@@ -140,34 +151,50 @@ public class RotationalJigglingStrategy implements IJigglingStrategy {
         return rotateableNeighbors;
     }
 
-    private boolean rotationIsValid(Seed mySeed, Seed origin, double theta) {
+    private boolean rotationIsValid(seed originalSeed, Seed origin, double theta) {
+        Seed originalSeedCopy = seedCopy(originalSeed);
+        Seed mySeed = new Seed(originalSeed);
+
         Seed rotatedSeed = rotateSeed(mySeed, origin, theta);
-        return Analysis.silentlyValidateSeeds(rotatedSeed, seeds, trees, w, h);
+        updateSeed(originalSeed, rotatedSeed);
+
+        boolean valid = Analysis.validateBoard(seeds, trees, w, h);
+
+        updateSeed(originalSeed, originalSeedCopy);
+
+        return valid;
     }
 
-    private boolean anyRotationDirectionIsValid(Seed mySeed, Seed origin) {
-        boolean canRotate = rotationIsValid(mySeed, origin, THETA_DELTA) || rotationIsValid(mySeed, origin, -THETA_DELTA);
+    private boolean anyRotationDirectionIsValid(seed originalSeed, Seed origin) {
+        boolean canRotate = rotationIsValid(originalSeed, origin, THETA_DELTA) || rotationIsValid(originalSeed, origin, -THETA_DELTA);
         return canRotate;
     }
 
-    private boolean shouldRotatePositively(Seed mySeed, Seed origin, double s) {
-        double currentScore = Analysis.calculateSeedScore(mySeed, seeds, s);
+    private boolean shouldRotatePositively(seed originalSeed, Seed origin, double s) {
+        Seed mySeed = new Seed(originalSeed);
+        Seed originalSeedCopy = seedCopy(originalSeed);
+
+        double currentScore = Analysis.calculateBoardScore(seeds, s);
 
         double positiveScore, negativeScore;
 
-        if (!rotationIsValid(mySeed, origin, THETA_DELTA)) {
+        if (!rotationIsValid(originalSeed, origin, THETA_DELTA)) {
             positiveScore = 0.0f;
         } else {
             Seed positiveRotationSeed = rotateSeed(mySeed, origin, THETA_DELTA);
-            positiveScore = Analysis.calculateSeedScore(positiveRotationSeed, seeds, s);
+            updateSeed(originalSeed, positiveRotationSeed);
+            positiveScore = Analysis.calculateBoardScore(seeds, s);
         }
 
-        if (!rotationIsValid(mySeed, origin, -THETA_DELTA)) {
+        if (!rotationIsValid(originalSeed, origin, -THETA_DELTA)) {
             negativeScore = 0.0f;
         } else {
             Seed negativeRotationSeed = rotateSeed(mySeed, origin, THETA_DELTA);
-            negativeScore = Analysis.calculateSeedScore(negativeRotationSeed, seeds, s);
+            updateSeed(originalSeed, negativeRotationSeed);
+            negativeScore = Analysis.calculateBoardScore(seeds, s);
         }
+
+        updateSeed(originalSeed, originalSeedCopy);
 
         return positiveScore >= negativeScore;
     }
