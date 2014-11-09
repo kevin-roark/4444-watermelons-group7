@@ -7,6 +7,9 @@ import watermelon.sim.*;
 public class ChooseBestStrategyStrategy extends Strategy {
     List<Strategy> strategies;
 
+    public ChooseBestStrategyStrategy(Strategy... strategies) {
+        this(Arrays.asList(strategies));
+    }
     public ChooseBestStrategyStrategy(List<Strategy> strategies) {
         super(null, null, null);
         this.strategies = strategies;
@@ -21,10 +24,13 @@ public class ChooseBestStrategyStrategy extends Strategy {
         ArrayList<seed> best_placement = null;
 
         for (Strategy strat : strategies) {
+            System.out.printf("Trying %s...\n", strat.getClass());
+
             ArrayList<seed> tmp = strat.move(trees, w, l, s);
             double score = Analysis.calculateBoardScore(tmp, s);
 
             if (score > best_score) {
+
                 best_score = score;
                 best_placement = tmp;
             }
