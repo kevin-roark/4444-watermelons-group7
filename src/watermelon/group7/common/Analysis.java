@@ -60,7 +60,7 @@ public class Analysis {
         boolean result = true;
 
         for (seed s : seeds) {
-            result &= validateSeed(s, seeds, trees, W, L);
+            result &= silentlyValidateSeed(s, seeds, trees, W, L);
         }
 
         return result;
@@ -70,15 +70,15 @@ public class Analysis {
 		  return validateSeeds(s, seeds, trees, W, L, true);
 	}
 
-  static boolean silentlyValidateSeeds(seed s, ArrayList<seed> seeds, ArrayList<Pair> trees, double W, double L) {
+  static boolean silentlyValidateSeed(seed s, ArrayList<seed> seeds, ArrayList<Pair> trees, double W, double L) {
       return validateSeeds(s, seeds, trees, W, L, false);
   }
 
   static boolean validateSeeds(seed s, ArrayList<seed> seeds, ArrayList<Pair> trees, double W, double L, boolean verbose) {
     for (seed other : seeds) {
-            if (s == other || s.equals(other)) continue;
+            if (s == other) continue;
 
-            double dist = WatermelonMathUtil.distance(s, other);
+            double dist = WatermelonMathUtil.distance(s, other) + 0.000001;
             if (dist < Constants.seed_diameter) {
                 if (verbose) System.out.printf("Seeds too close! The distance between two seeds is %f.\n", dist);
                 return false;
