@@ -14,8 +14,8 @@ public class Player extends watermelon.sim.Player {
 	public static final double distoseed = 2.01;
 
 	public void init() {
-        // I'm using a hex packing strategy.
-        IPackingStrategy packing = new HexPackingStrategy();
+        IPackingStrategy hexPacking = new HexPackingStrategy();
+				IPackingStrategy pivotPacking = new PivotPackingStrategy();
 
         // I"m using a ProgressiveLabelingStrategy, which means do the ModLabelingStrategy first and
         // then do the SelfishLabelingStrategy.
@@ -24,7 +24,11 @@ public class Player extends watermelon.sim.Player {
 
 				IJigglingStrategy jiggling = new RotationalJigglingStrategy();
 
-        strategy = new Strategy(packing, labeling, jiggling);
+				Strategy hexStrategy = new Strategy(hexPacking, labeling, jiggling);
+				Strategy checkerboardStrategy = new CheckerboardStrategy();
+				Strategy pivotStrategy = new Strategy(pivotPacking, labeling, jiggling);
+
+        strategy = new ChooseBestStrategyStrategy(hexStrategy, checkerboardStrategy, pivotStrategy);
 	}
 
     public double getHexXOffset() {

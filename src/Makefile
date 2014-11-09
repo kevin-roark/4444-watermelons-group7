@@ -1,6 +1,6 @@
 PLAYER=group7
-MAP=mapgroup3
-L=30
+MAP=map1110
+L=40
 W=40
 S=0.01
 GUI=false
