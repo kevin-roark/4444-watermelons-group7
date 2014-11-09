@@ -65,6 +65,8 @@ public class RotationalJigglingStrategy implements IJigglingStrategy {
             boolean rotatePositively = shouldRotatePositively(originalSeed, neighbor, s);
             double thetaDelta = rotatePositively? THETA_DELTA : -THETA_DELTA;
 
+            //System.out.printf("Rotating %s around %s with %f\n", originalSeedCopy, neighbor, thetaDelta);
+
             double theta = thetaDelta;
             double newScore = currentScore;
             Seed finalSeed = null;
@@ -84,7 +86,10 @@ public class RotationalJigglingStrategy implements IJigglingStrategy {
                 finalSeed = rotatedSeed;
             } while (true);
 
-            if (finalSeed != null) rotatedNeighborSeeds.add(finalSeed);
+            if (finalSeed != null) {
+              //System.out.printf("Score diff from above: %f\n", (newScore - currentScore));
+              rotatedNeighborSeeds.add(finalSeed);
+            }
         }
 
         // find the neighbor that gave us best results
@@ -104,7 +109,7 @@ public class RotationalJigglingStrategy implements IJigglingStrategy {
 
         double scoreDiff = bestScore - currentScore;
         if (scoreDiff > 0) {
-            System.out.printf("GOOD::: best: %s // original: %s // diff: %f\n", bestSeed, originalSeedCopy, scoreDiff);
+            //System.out.printf("GOOD::: best: %s // original: %s // diff: %f\n", bestSeed, originalSeedCopy, scoreDiff);
         }
         else if (scoreDiff < 0) {
             System.out.printf("BAD::: best: %s // original: %s // diff: %f\n", bestSeed, originalSeedCopy, scoreDiff);
@@ -134,9 +139,11 @@ public class RotationalJigglingStrategy implements IJigglingStrategy {
         ArrayList<Seed> neighbors = graph.get(mySeed);
 
         for (Seed neighbor : neighbors) {
+            if (neighbor.tetraploid == mySeed.tetraploid) continue;
+
             ArrayList<Seed> doubleNeighbors = graph.get(neighbor);
 
-            if (doubleNeighbors != null && doubleNeighbors.size() <= 5 && neighbor.tetraploid == mySeed.tetraploid) {
+            if (doubleNeighbors != null && doubleNeighbors.size() <= 5) {
               rotateableNeighbors.add(neighbor);
             }
         }
