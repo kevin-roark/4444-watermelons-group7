@@ -17,6 +17,8 @@ public class Player extends watermelon.sim.Player {
         IPackingStrategy hexPacking = new HexPackingStrategy();
 				IPackingStrategy pivotPacking = new PivotPackingStrategy();
 
+				IFillingStrategy filling = new EmptySpaceFillingStrategy();
+
         // I"m using a ProgressiveLabelingStrategy, which means do the ModLabelingStrategy first and
         // then do the SelfishLabelingStrategy.
         ILabelingStrategy labeling = new ProgressiveLabelingStrategy(Arrays.asList(new ModLabelingStrategy(2),
@@ -24,9 +26,9 @@ public class Player extends watermelon.sim.Player {
 
 				IJigglingStrategy jiggling = new RotationalJigglingStrategy();
 
-				Strategy hexStrategy = new Strategy(hexPacking, labeling, jiggling, "HEX");
+				Strategy hexStrategy = new Strategy(hexPacking, filling, labeling, jiggling, "HEX");
 				Strategy checkerboardStrategy = new CheckerboardStrategy();
-				Strategy pivotStrategy = new Strategy(pivotPacking, labeling, jiggling, "PIVOT");
+				Strategy pivotStrategy = new Strategy(pivotPacking, filling, labeling, jiggling, "PIVOT");
 
         strategy = new ChooseBestStrategyStrategy(hexStrategy, checkerboardStrategy, pivotStrategy);
 	}

@@ -6,7 +6,7 @@ import watermelon.sim.*;
 
 public class CheckerboardStrategy extends Strategy {
     public CheckerboardStrategy() {
-        super(new CheckboardPackingStrategy(), new SelfishLabelingStrategy(), new RotationalJigglingStrategy());
+        super(new CheckboardPackingStrategy(), new EmptySpaceFillingStrategy(), new SelfishLabelingStrategy(), new RotationalJigglingStrategy());
 
         this.name = "CHECKERBOARD";
     }

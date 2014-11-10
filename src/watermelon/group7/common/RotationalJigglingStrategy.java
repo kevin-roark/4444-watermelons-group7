@@ -9,6 +9,7 @@ import java.util.*;
 public class RotationalJigglingStrategy implements IJigglingStrategy {
 
     private static final double THETA_DELTA = 0.005;
+    private static final double SCORE_GAIN_TOLERANCE = 1e-4;
 
     private static final int MAX_PASSES = 10;
 
@@ -37,9 +38,9 @@ public class RotationalJigglingStrategy implements IJigglingStrategy {
         this.seeds = seeds;
 
         double currentScore = Analysis.calculateBoardScore(this.seeds, s);
-        double newScore = currentScore + 0.000001;
+        double newScore = currentScore + SCORE_GAIN_TOLERANCE + 0.01;
 
-        for (int i = 0; i < this.passes && newScore > currentScore; i++) {
+        for (int i = 0; i < this.passes && newScore > currentScore + SCORE_GAIN_TOLERANCE; i++) {
             this.graph = GraphNode.getMapGraph(seeds);
             List<Seed> rotationalCandidates = rotationalCandidates(this.graph);
 
@@ -55,7 +56,7 @@ public class RotationalJigglingStrategy implements IJigglingStrategy {
             currentScore = newScore;
             newScore = Analysis.calculateBoardScore(this.seeds, s);
 
-            System.out.println("FINISHED PASS " + i + " WITH INCREMENTAL GAIN " + (newScore - currentScore));
+            System.out.println("FINISHED PASS " + (i + 1) + " WITH INCREMENTAL GAIN " + (newScore - currentScore));
         }
 
         return seeds;

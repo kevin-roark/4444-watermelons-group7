@@ -5,6 +5,7 @@ import watermelon.sim.*;
 
 public class Strategy extends Player {
     IPackingStrategy  packing;
+    IFillingStrategy  filling;
     ILabelingStrategy labeling;
     IJigglingStrategy jiggling;
 
@@ -15,11 +16,16 @@ public class Strategy extends Player {
     }
 
     public Strategy(IPackingStrategy packing, ILabelingStrategy labeling, IJigglingStrategy jiggler) {
-        this(packing, labeling, jiggler, "STRATEGY");
+        this(packing, null, labeling, jiggler);
     }
 
-    public Strategy(IPackingStrategy packing, ILabelingStrategy labeling, IJigglingStrategy jiggler, String name) {
+    public Strategy(IPackingStrategy packing, IFillingStrategy filling, ILabelingStrategy labeling, IJigglingStrategy jiggler) {
+        this(packing, filling, labeling, jiggler, "STRATEGY");
+    }
+
+    public Strategy(IPackingStrategy packing, IFillingStrategy filling, ILabelingStrategy labeling, IJigglingStrategy jiggler, String name) {
         this.packing = packing;
+        this.filling = filling;
         this.labeling = labeling;
         this.jiggling = jiggler;
         this.name = name;
@@ -31,10 +37,14 @@ public class Strategy extends Player {
 	public ArrayList<seed> move(ArrayList<Pair> trees, double w, double l, double s) {
         ArrayList<seed> seeds = packing.generatePacking(trees, w, l);
 
+        if (this.filling != null) {
+            filling.fillSeeds(seeds, trees, w, l);
+        }
+
         labeling.labelSeeds(seeds, s);
 
         if (this.jiggling != null) {
-          jiggling.jiggleSeeds(seeds, trees, w, l, s);
+            jiggling.jiggleSeeds(seeds, trees, w, l, s);
         }
 
         printSummary(seeds, trees, w, l, s);
