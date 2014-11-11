@@ -14,21 +14,23 @@ public class Player extends watermelon.sim.Player {
 	public static final double distoseed = 2.01;
 
 	public void init() {
+    }
+    public void initStrategy(double width, double height) {
         IPackingStrategy hexPacking = new HexPackingStrategy();
-				IPackingStrategy pivotPacking = new PivotPackingStrategy();
+        IPackingStrategy pivotPacking = new PivotPackingStrategy();
 
-				IFillingStrategy filling = new EmptySpaceFillingStrategy();
+        IFillingStrategy filling = new EmptySpaceFillingStrategy();
 
         // I"m using a ProgressiveLabelingStrategy, which means do the ModLabelingStrategy first and
         // then do the SelfishLabelingStrategy.
         ILabelingStrategy labeling = new ProgressiveLabelingStrategy(Arrays.asList(new ModLabelingStrategy(2),
                                                                                    new SelfishLabelingStrategy(41)));
 
-				IJigglingStrategy jiggling = new RotationalJigglingStrategy();
+        IJigglingStrategy jiggling = new RotationalJigglingStrategy();
 
-				Strategy hexStrategy = new Strategy(hexPacking, filling, labeling, jiggling, "HEX");
-				Strategy checkerboardStrategy = new CheckerboardStrategy();
-				Strategy pivotStrategy = new Strategy(pivotPacking, filling, labeling, jiggling, "PIVOT");
+        Strategy hexStrategy = new Strategy(new BestHexPackingStrategy(width, height), filling, labeling, jiggling, "HEX");
+        Strategy checkerboardStrategy = new CheckerboardStrategy();
+        Strategy pivotStrategy = new Strategy(pivotPacking, filling, labeling, jiggling, "PIVOT");
 
         strategy = new ChooseBestStrategyStrategy(hexStrategy, checkerboardStrategy, pivotStrategy);
 	}
@@ -48,7 +50,7 @@ public class Player extends watermelon.sim.Player {
 	@Override
 	public ArrayList<seed> move(ArrayList<Pair> treelist, double width, double length, double s) {
         if (strategy == null) {
-            init();
+            initStrategy(width, length);
         }
 
         return strategy.move(treelist, width, length, s);

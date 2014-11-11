@@ -74,6 +74,11 @@ public class Analysis {
       return validateSeeds(s, seeds, trees, W, L, false);
   }
 
+  static boolean seedOnBoard(seed s, double W, double L) {
+    return !((s.x < Constants.wall_spacing || W - s.x < Constants.wall_spacing) ||
+             (s.y < Constants.wall_spacing || L - s.y < Constants.wall_spacing));
+  }
+
   static boolean validateSeeds(seed s, ArrayList<seed> seeds, ArrayList<Pair> trees, double W, double L, boolean verbose) {
     for (seed other : seeds) {
             if (s == other) continue;
@@ -87,11 +92,11 @@ public class Analysis {
             }
     }
 
-        if ((s.x < Constants.wall_spacing || W - s.x < Constants.wall_spacing) ||
-            (s.y < Constants.wall_spacing || L - s.y < Constants.wall_spacing)) {
-            if (verbose) System.out.printf("The seed at (%f, %f) is too close to the wall\n", s.x, s.y);
-            return false;
-        }
+    if ((s.x < Constants.wall_spacing || W - s.x < Constants.wall_spacing) ||
+        (s.y < Constants.wall_spacing || L - s.y < Constants.wall_spacing)) {
+        if (verbose) System.out.printf("The seed at (%f, %f) is too close to the wall\n", s.x, s.y);
+        return false;
+    }
 
     for (Pair tree : trees) {
             double dist = WatermelonMathUtil.distance(s, tree);
