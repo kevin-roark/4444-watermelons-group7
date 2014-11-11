@@ -91,6 +91,10 @@ public class Vector2 {
       return new Seed(this.x, this.y, s.tetraploid);
     }
 
+    public seed getSeed() {
+        return new seed(this.x, this.y, false);
+    }
+
     @Override
     public String toString() {
         return String.format("<Vector2 (%f, %f)>", x, y);
