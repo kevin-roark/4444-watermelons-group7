@@ -6,9 +6,13 @@ import watermelon.sim.*;
 import java.util.*;
 
 public class ChooseBestPackingStrategy implements IPackingStrategy {
-    ArrayList<IPackingStrategy> strategies;
+    List<IPackingStrategy> strategies;
 
-    public ChooseBestPackingStrategy(ArrayList<IPackingStrategy> strategies) {
+    public ChooseBestPackingStrategy(IPackingStrategy... strategies) {
+        this(Arrays.asList(strategies));
+    }
+
+    public ChooseBestPackingStrategy(List<IPackingStrategy> strategies) {
         if (strategies.size() == 0) {
             throw new RuntimeException("ChooseBestPackingStrategy was given an empty menu of strategies in its constructor!");
         }
@@ -21,6 +25,7 @@ public class ChooseBestPackingStrategy implements IPackingStrategy {
 
         for (IPackingStrategy s : strategies) {
             ArrayList<seed> result = s.generatePacking(trees, width, height);
+            System.out.printf("New packing: %d seeds.\n", result.size());
             if (result.size() > best) {
                 best = result.size();
                 best_packing = result;
