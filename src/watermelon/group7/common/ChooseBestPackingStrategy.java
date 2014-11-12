@@ -24,8 +24,10 @@ public class ChooseBestPackingStrategy implements IPackingStrategy {
         ArrayList<seed> best_packing = null;
 
         EmptySpaceFillingStrategy esfs = new EmptySpaceFillingStrategy();
+
         for (IPackingStrategy s : strategies) {
             ArrayList<seed> result = s.generatePacking(trees, width, height);
+
             if (result.size() + 100 < best) continue;
             esfs.fillSeeds(result, trees, width, height);
 

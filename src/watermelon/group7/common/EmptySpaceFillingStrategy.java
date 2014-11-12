@@ -21,6 +21,10 @@ public class EmptySpaceFillingStrategy implements IFillingStrategy {
     }
 
     public ArrayList<seed> fillSeeds(ArrayList<seed> seeds, ArrayList<Pair> trees, double width, double height) {
+        return performSeedFill(seeds, trees, width, height);
+    }
+
+    protected ArrayList<seed> performSeedFill(ArrayList<seed> seeds, ArrayList<Pair> trees, double width, double height) {
         double wall = Constants.wall_spacing;
 
         for (double y = wall; y < height - wall; y += spaceDelta) {
