@@ -9,7 +9,7 @@ import java.util.*;
 public class RotationalJigglingStrategy implements IJigglingStrategy {
 
     private static final double THETA_DELTA = 0.005;
-    private static final double SCORE_GAIN_TOLERANCE = 1e-4;
+    private static final double SCORE_GAIN_TOLERANCE = 1e-3;
 
     private static final int MAX_PASSES = 10;
 

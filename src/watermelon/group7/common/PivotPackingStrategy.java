@@ -10,7 +10,7 @@ public class PivotPackingStrategy implements IPackingStrategy {
     double delta;
 
     public PivotPackingStrategy() {
-       this.delta = Math.PI / 2;
+       this.delta = Math.PI / 3;
     }
 
     public ArrayList<seed> generatePacking(ArrayList<Pair> trees, double width, double height) {
@@ -40,15 +40,15 @@ public class PivotPackingStrategy implements IPackingStrategy {
         return seeds;
     }
 
-    void addSeed(seed s, ArrayList<seed> list) {
+    protected void addSeed(seed s, ArrayList<seed> list) {
         list.add(s);
     }
 
-    ArrayList<seed> placeHex(Vector2 center, double orientation, ArrayList<seed> seeds, ArrayList<Pair> trees, double width, double height) {
+    protected ArrayList<seed> placeHex(Vector2 center, double orientation, ArrayList<seed> seeds, ArrayList<Pair> trees, double width, double height) {
         return placeRing(center, orientation, Constants.PI_OVER_3, seeds, trees, width, height);
     }
 
-    ArrayList<seed> placeRing(Vector2 center, double orientation, double theta_delta, ArrayList<seed> seeds, ArrayList<Pair> trees, double width, double height) {
+    protected ArrayList<seed> placeRing(Vector2 center, double orientation, double theta_delta, ArrayList<seed> seeds, ArrayList<Pair> trees, double width, double height) {
         ArrayList<seed> placed = new ArrayList<seed>();
         for (double d = orientation; d < Constants.TWO_PI; d += theta_delta) {
             seed potential = getClosestValid(center, d, Constants.seed_diameter, seeds, trees, width, height);
@@ -64,7 +64,7 @@ public class PivotPackingStrategy implements IPackingStrategy {
         return placed;
     }
 
-    seed getClosestValid(Vector2 center, double d, double radius, ArrayList<seed> seeds, ArrayList<Pair> trees, double width, double height) {
+    protected seed getClosestValid(Vector2 center, double d, double radius, ArrayList<seed> seeds, ArrayList<Pair> trees, double width, double height) {
         double epsilon = 0.0;
         seed closest = null;
 

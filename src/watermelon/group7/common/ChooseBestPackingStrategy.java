@@ -23,8 +23,12 @@ public class ChooseBestPackingStrategy implements IPackingStrategy {
         int best = 0;
         ArrayList<seed> best_packing = null;
 
+        EmptySpaceFillingStrategy esfs = new EmptySpaceFillingStrategy();
         for (IPackingStrategy s : strategies) {
             ArrayList<seed> result = s.generatePacking(trees, width, height);
+            if (result.size() + 100 < best) continue;
+            esfs.fillSeeds(result, trees, width, height);
+
             System.out.printf("New packing: %d seeds.\n", result.size());
             if (result.size() > best) {
                 best = result.size();
