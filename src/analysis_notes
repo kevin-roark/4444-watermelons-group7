@@ -1,0 +1,39 @@
+
+empty space granularity:
+
+40 x 40 board, map from 11/10 class day (dense with trees)
+
+without emfs: 202.36, 1 s
+
+0.01: 244.75, 800 s
+0.025: 241.99, 120 s
+0.05: 240.88, 31.5 s
+0.1: 240.29, 9.4 s
+0.2: 233.55, 3.5 s
+0.4: 230.57, 1.8 s
+1.0: 216.48, 1 s
+
+
+
+running tournament without space filling for s=0.01
+
+0: 171.80, 308
+1: 178.76, 319
+2: 87.89, 144
+3: 101.06, 168
+4: 112.28, 194
+5: 185.39, 334
+6: 61.68, 105
+7: 6.65, 8
+8: 555.12, 1014
+9: 556.30, 1015
+
+
+
+running tournament without jiggling
+
+0: 172.79, 9.3 seconds
+1: 192.49, 10.4 seconds
+2: 88.88, 3.6 seconds
+3: 116.06, 18.6 seconds
+4: 118.71, 17.7 seconds
